@@ -1,11 +1,18 @@
-﻿namespace API.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class AccountRole
+namespace API.Models;
+
+[Table("tb_tr_account_roles")]
+public class AccountRole : BaseEntity
 {
-    public Guid Guid { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime ModefiedDate { get; set; }
+    [Column("account_guid")]
     public Guid AccountGuid { get; set; }
+
+    [Column("role_guid")]
     public Guid RoleGuid { get; set; }
+
+    public Account Account { get; set; }
+
+    public Role Role { get; set; }
 
 }
