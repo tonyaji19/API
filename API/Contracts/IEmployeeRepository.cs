@@ -2,11 +2,12 @@
 
 namespace API.Contracts;
 
-public interface IEmployeeRepository
+public interface IEmployeeRepository : IGeneralRepository<Employee>
 {
-    Employee Create(Employee employee);
+    public Guid? FindGuidByEmail(string email);
+/*    Employee Create(Employee employee);
     bool Update(Employee employee);
     bool Delete(Guid guid);
     IEnumerable<Employee> GetAll();
-    Employee? GetByGuid(Guid guid);
+    Employee? GetByGuid(Guid guid);*/
 }

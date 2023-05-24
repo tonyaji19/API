@@ -4,21 +4,26 @@ using API.Models;
 
 namespace API.Repositories;
 
-public class RoomRepository : IRoomRepository
+public class RoomRepository : GeneralRepository<Room>, IRoomRepository
 {
-    private readonly BookingManagementDbContext _context;
+
+    public RoomRepository(BookingManagementDbContext context) : base(context)
+    {
+
+    }
+    /*private readonly BookingManagementDbContext _context;
     public RoomRepository(BookingManagementDbContext context)
     {
         _context = context;
     }
 
-    /*
+    *//*
      * <summary>
      * Create a new university
      * </summary>
      * <param name="university">University object</param>
      * <returns>University object</returns>
-     */
+     *//*
     public Room Create(Room room)
     {
         try
@@ -33,14 +38,14 @@ public class RoomRepository : IRoomRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Update a university
      * </summary>
      * <param name="university">University object</param>
      * <returns>true if data updated</returns>
      * <returns>false if data not updated</returns>
-     */
+     *//*
     public bool Update(Room room)
     {
         try
@@ -55,14 +60,14 @@ public class RoomRepository : IRoomRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Delete a university
      * </summary>
      * <param name="guid">University guid</param>
      * <returns>true if data deleted</returns>
      * <returns>false if data not deleted</returns>
-     */
+     *//*
     public bool Delete(Guid guid)
     {
         try
@@ -83,28 +88,28 @@ public class RoomRepository : IRoomRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Get all universities
      * </summary>
      * <returns>List of universities</returns>
      * <returns>Empty list if no data found</returns>
-     */
+     *//*
     public IEnumerable<Room> GetAll()
     {
         return _context.Set<Room>().ToList();
     }
 
-    /*
+    *//*
      * <summary>
      * Get a university by guid
      * </summary>
      * <param name="guid">University guid</param>
      * <returns>University object</returns>
      * <returns>null if no data found</returns>
-     */
+     *//*
     public Room? GetByGuid(Guid guid)
     {
         return _context.Set<Room>().Find(guid);
-    }
+    }*/
 }

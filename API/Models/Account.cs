@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models;
 
@@ -6,6 +7,7 @@ namespace API.Models;
 [Table("tb_m_accounts")]
 public class Account : BaseEntity
 {
+ 
     [Column("password")]
     public string Password { get; set; }
 
@@ -24,7 +26,4 @@ public class Account : BaseEntity
 
     public Employee? Employee { get; set; }
     public ICollection<AccountRole>? AccountRoles { get; set; }
-
-
-
 }

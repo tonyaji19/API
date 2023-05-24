@@ -4,21 +4,30 @@ using API.Models;
 
 namespace API.Repositories;
 
-public class UniversityRepository : IUniversityRepository
+public class UniversityRepository : GeneralRepository<University>, IUniversityRepository
 {
-    private readonly BookingManagementDbContext _context;
+
+    public UniversityRepository(BookingManagementDbContext context) : base(context)
+    {
+
+    }
+    public IEnumerable<University> GetByName(string name)
+    {
+        return _context.Set<University>().Where(u => u.Name.Contains(name));
+    }
+    /*private readonly BookingManagementDbContext _context;
     public UniversityRepository(BookingManagementDbContext context)
     {
         _context = context;
     }
 
-    /*
+    *//*
      * <summary>
      * Create a new university
      * </summary>
      * <param name="university">University object</param>
      * <returns>University object</returns>
-     */
+     *//*
     public University Create(University university)
     {
         try
@@ -33,14 +42,14 @@ public class UniversityRepository : IUniversityRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Update a university
      * </summary>
      * <param name="university">University object</param>
      * <returns>true if data updated</returns>
      * <returns>false if data not updated</returns>
-     */
+     *//*
     public bool Update(University university)
     {
         try
@@ -55,14 +64,14 @@ public class UniversityRepository : IUniversityRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Delete a university
      * </summary>
      * <param name="guid">University guid</param>
      * <returns>true if data deleted</returns>
      * <returns>false if data not deleted</returns>
-     */
+     *//*
     public bool Delete(Guid guid)
     {
         try
@@ -83,28 +92,28 @@ public class UniversityRepository : IUniversityRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Get all universities
      * </summary>
      * <returns>List of universities</returns>
      * <returns>Empty list if no data found</returns>
-     */
+     *//*
     public IEnumerable<University> GetAll()
     {
         return _context.Set<University>().ToList();
     }
 
-    /*
+    *//*
      * <summary>
      * Get a university by guid
      * </summary>
      * <param name="guid">University guid</param>
      * <returns>University object</returns>
      * <returns>null if no data found</returns>
-     */
+     *//*
     public University? GetByGuid(Guid guid)
     {
         return _context.Set<University>().Find(guid);
-    }
+    }*/
 }

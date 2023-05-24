@@ -4,21 +4,40 @@ using API.Models;
 
 namespace API.Repositories;
 
-public class EmployeeRepository : IEmployeeRepository
+public class EmployeeRepository : GeneralRepository<Employee>, IEmployeeRepository
 {
-    private readonly BookingManagementDbContext _context;
+    public EmployeeRepository(BookingManagementDbContext context) : base(context) { }
+
+    public Guid? FindGuidByEmail(string email)
+    {
+        try
+        {
+            var employee = _context.Employees.FirstOrDefault(e => e.Email == email);
+            if (employee == null)
+            {
+                return null;
+            }
+            return employee.Guid;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /*private readonly BookingManagementDbContext _context;
     public EmployeeRepository(BookingManagementDbContext context)
     {
         _context = context;
     }
 
-    /*
+    *//*
      * <summary>
      * Create a new university
      * </summary>
      * <param name="university">University object</param>
      * <returns>University object</returns>
-     */
+     *//*
     public Employee Create(Employee employee)
     {
         try
@@ -33,14 +52,14 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Update a university
      * </summary>
      * <param name="university">University object</param>
      * <returns>true if data updated</returns>
      * <returns>false if data not updated</returns>
-     */
+     *//*
     public bool Update(Employee employee)
     {
         try
@@ -55,14 +74,14 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Delete a university
      * </summary>
      * <param name="guid">University guid</param>
      * <returns>true if data deleted</returns>
      * <returns>false if data not deleted</returns>
-     */
+     *//*
     public bool Delete(Guid guid)
     {
         try
@@ -83,28 +102,28 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
-    /*
+    *//*
      * <summary>
      * Get all universities
      * </summary>
      * <returns>List of universities</returns>
      * <returns>Empty list if no data found</returns>
-     */
+     *//*
     public IEnumerable<Employee> GetAll()
     {
         return _context.Set<Employee>().ToList();
     }
 
-    /*
+    *//*
      * <summary>
      * Get a university by guid
      * </summary>
      * <param name="guid">University guid</param>
      * <returns>University object</returns>
      * <returns>null if no data found</returns>
-     */
+     *//*
     public Employee? GetByGuid(Guid guid)
     {
         return _context.Set<Employee>().Find(guid);
-    }
+    }*/
 }
