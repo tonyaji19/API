@@ -54,7 +54,7 @@ public class AccountController : ControllerBase
     {
         // Cek apakah email dan OTP valid
         var account = _employeeRepository.FindGuidByEmail(changePasswordVM.Email);
-        var changePass = _accountRepository.GetByEmployeeId(account, changePasswordVM);
+        var changePass = _accountRepository.ChangePasswordAccount(account, changePasswordVM);
         switch (changePass)
         {
             case 0:
@@ -68,8 +68,9 @@ public class AccountController : ControllerBase
             case 4:
                 return BadRequest("OTP expired");
             case 5:
-                return BadRequest("Cek ...");
-
+                return BadRequest("Wrong Password No Same");
+            default:
+                return BadRequest();
         }
         return null;
 

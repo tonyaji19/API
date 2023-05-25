@@ -21,7 +21,7 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         return _context.Accounts.FirstOrDefault(a => a.Email == email);
     }*/
 
-    public int GetByEmployeeId(Guid? employeeId, ChangePasswordVM changePasswordVM)
+    public int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM)
     {
         var account = new Account();
         account = _context.Set<Account>().FirstOrDefault(a => a.Guid == employeeId);
@@ -29,25 +29,21 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         {
             return 2;
         }
-
         // Cek apakah OTP sudah digunakan
         if (account.IsUsed)
         {
             return 3;
         }
-
         // Cek apakah OTP sudah expired
         if (account.ExpiredTime < DateTime.Now)
         {
             return 4;
         }
-
         // Cek apakah NewPassword dan ConfirmPassword sesuai
         if (changePasswordVM.NewPassword != changePasswordVM.ConfirmPassword)
         {
             return 5;
         }
-
         // Update password
         account.Password = changePasswordVM.NewPassword;
         account.IsUsed = true;
@@ -64,11 +60,9 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         {
             return 0;
         }
-
-
     }
 
-    public bool UpdatePassword(Account account)
+/*    public bool UpdatePassword(Account account)
     {
         try
         {
@@ -80,7 +74,7 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         {
             return false;
         }
-    }
+    }*/
     /*        OTPDictionary = new Dictionary<string, ChangePasswordVM>();
     */
     /* public AccountEmpVM Login(LoginVM loginVM)
