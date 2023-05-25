@@ -5,6 +5,7 @@ using API.Models;
 using API.Utility;
 using API.ViewModels.Account;
 using API.ViewModels.Employees;
+using API.ViewModels.Login;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,13 +15,31 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
 {
     /*    private Dictionary<string, ChangePasswordVM> OTPDictionary;
     */
-    public AccountRepository(BookingManagementDbContext context) : base(context)
-    { }
+    private readonly IEmployeeRepository _employeeRepository;
+    public AccountRepository(BookingManagementDbContext context, IEmployeeRepository employeeRepository) : base(context)
+    {
+        _employeeRepository = employeeRepository;
+    }
     /*public Account GetByEmail(string email)
     {
         return _context.Accounts.FirstOrDefault(a => a.Email == email);
     }*/
+    public LoginVM Login(LoginVM loginVM)
+    {
+        var account = GetAll();
+        var employee = _employeeRepository.GetAll();
+        var query = from emp in employee
+                    join acc in account
+                    on emp.Guid equals acc.Guid
+                    where emp.Email == loginVM.Email
+                    select new LoginVM
+                    {
+                        Email = emp.Email,
+                        Password = acc.Password
 
+                    };
+        return query.FirstOrDefault();
+    }
     public int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM)
     {
         var account = new Account();

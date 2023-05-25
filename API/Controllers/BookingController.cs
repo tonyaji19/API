@@ -81,6 +81,17 @@ public class BookingController : ControllerBase
 
         return Ok();
     }
+    [HttpGet("bookingduration")]
+    public IActionResult GetDuration()
+    {
+        var bookingLengths = _bookingRepository.GetBookingDuration();
+        if (!bookingLengths.Any())
+        {
+            return NotFound();
+        }
+
+        return Ok(bookingLengths);
+    }
 }
 
 

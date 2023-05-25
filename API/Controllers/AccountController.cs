@@ -9,6 +9,7 @@ using API.Repositories;
 using Microsoft.EntityFrameworkCore;
 using API.ViewModels.Accounts;
 using API.Utility;
+using API.ViewModels.Login;
 
 namespace API.Controllers;
 
@@ -50,6 +51,25 @@ public class AccountController : ControllerBase
 
         return Ok(data);
     }*/
+    [HttpPost("login")]
+
+    public IActionResult Login(LoginVM loginVM)
+    {
+        var account = _accountRepository.Login(loginVM);
+
+        if (account == null)
+        {
+            return NotFound("Account not found");
+        }
+
+        if (account.Password != loginVM.Password)
+        {
+            return BadRequest("Password is invalid");
+        }
+
+        return Ok();
+
+    }
 
     [HttpPost("ChangePassword")]
     public IActionResult ChangePassword(ChangePasswordVM changePasswordVM)
