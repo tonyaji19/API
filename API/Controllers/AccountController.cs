@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using API.Repositories;
 using Microsoft.EntityFrameworkCore;
+using API.ViewModels.Accounts;
+using API.Utility;
 
 namespace API.Controllers;
 
@@ -74,6 +76,41 @@ public class AccountController : ControllerBase
         }
         return null;
 
+    }
+
+    [HttpPost("ForgotPassword" + "{email}")]
+    public IActionResult UpdateResetPass(String email)
+    {
+
+        var getGuid = _employeeRepository.FindGuidByEmail(email);
+        if (getGuid == null)
+        {
+            return NotFound("Akun tidak ditemukan");
+        }
+
+        var isUpdated = _accountRepository.UpdateOTP(getGuid);
+
+        switch (isUpdated)
+        {
+            case 0:
+                return BadRequest();
+            default:
+                var hasil = new AccountResetPasswordVM
+                {
+                    Email = email,
+                    OTP = isUpdated
+                };
+
+                MailService mailService = new MailService();
+                mailService.WithSubject("Kode OTP")
+                           .WithBody("OTP anda adalah: " + isUpdated.ToString() + ".\n" +
+                                     "Mohon kode OTP anda tidak diberikan kepada pihak lain" + ".\n" + "Terima kasih.")
+                           .WithEmail(email)
+                           .Send();
+
+                return Ok(hasil);
+
+        }
     }
 
 

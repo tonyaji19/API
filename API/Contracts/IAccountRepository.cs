@@ -8,6 +8,8 @@ public interface IAccountRepository : IGeneralRepository<Account>
 /*    Account GetByEmail(string email);
 */
     public int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM);
+    public int UpdateOTP(Guid? employeeId);
+
 
     /* bool VerifyOTP(string email, string otp);
      bool IsOTPUsed(string email, string otp);

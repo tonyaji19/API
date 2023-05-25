@@ -62,19 +62,36 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         }
     }
 
-/*    public bool UpdatePassword(Account account)
+    public int UpdateOTP(Guid? employeeId)
     {
+        var account = new Account();
+        account = _context.Set<Account>().FirstOrDefault(a => a.Guid == employeeId);
+        //Generate OTP
+        Random rnd = new Random();
+        var getOtp = rnd.Next(100000, 999999);
+        account.OTP = getOtp;
+
+        //Add 5 minutes to expired time
+        account.ExpiredTime = DateTime.Now.AddMinutes(5);
+        account.IsUsed = false;
         try
         {
-            _context.Entry(account).State = EntityState.Modified;
-            _context.SaveChanges();
-            return true;
+            var check = Update(account);
+
+
+            if (!check)
+            {
+                return 0;
+            }
+            return getOtp;
         }
-        catch (Exception)
+        catch
         {
-            return false;
+            return 0;
         }
-    }*/
+    }
+
+    
     /*        OTPDictionary = new Dictionary<string, ChangePasswordVM>();
     */
     /* public AccountEmpVM Login(LoginVM loginVM)
