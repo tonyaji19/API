@@ -1,7 +1,9 @@
 ﻿using API.Contexts;
 using API.Contracts;
 using API.Models;
+using API.ViewModels.Bookings;
 using API.ViewModels.Rooms;
+using RestAPI.ViewModels.Rooms;
 
 namespace API.Repositories;
 
@@ -10,8 +12,9 @@ public class RoomRepository : GeneralRepository<Room>, IRoomRepository
 
     public RoomRepository(BookingManagementDbContext context) : base(context)
     {
-
+        
     }
+    
     public IEnumerable<MasterRoomVM> GetByDate(DateTime dateTime)
     {
         var rooms = GetAll();
@@ -76,6 +79,54 @@ public class RoomRepository : GeneralRepository<Room>, IRoomRepository
         }
         return usedRooms;
     }
+    public IEnumerable<RoomBookedTodayVM> GetAvailableRoom()
+    {
+        try
+        {
+            //get all data from booking and rooms
+            var booking = _context.Bookings.ToList();
+            var rooms = GetAll();
+
+            var startToday = DateTime.Today;
+            var endToday = DateTime.Today.AddHours(23).AddMinutes(59);
+
+            var roomUse = rooms.Join(booking, Room => Room.Guid, booking => booking.RoomGuid, (Room, booking) => new { Room, booking })
+                    .Select(joinResult => new {
+                        joinResult.Room.Name,
+                        joinResult.Room.Floor,
+                        joinResult.Room.Capacity,
+                        joinResult.booking.StartDate,
+                        joinResult.booking.EndDate
+                    }
+             );
+
+            var roomUseTodays = new List<RoomBookedTodayVM>();
+
+
+            foreach (var room in roomUse)
+            {
+                if ((room.StartDate < startToday && room.EndDate < startToday) || (room.StartDate > startToday && room.EndDate > endToday))
+                {
+                    var roomDay = new RoomBookedTodayVM
+                    {
+                        RoomName = room.Name,
+                        Floor = room.Floor,
+                        Capacity = room.Capacity
+                    };
+                    roomUseTodays.Add(roomDay);
+                }
+            }
+            return roomUseTodays;
+        }
+
+        catch
+        {
+            return null;
+
+        }
+    }
+    //k1
+ 
     /*private readonly BookingManagementDbContext _context;
     public RoomRepository(BookingManagementDbContext context)
     {

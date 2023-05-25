@@ -65,6 +65,24 @@ public class RoomController : ControllerBase
 
         return Ok(room);
     }
+    [HttpGet("AvailableRoom")]
+    public IActionResult GetAvailableRoom()
+    {
+        try
+        {
+            var room = _roomRepository.GetAvailableRoom();
+            if (room is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(room);
+        }
+        catch
+        {
+            return Ok("Ada error");
+        }
+    }
 
     [HttpPost]
     public IActionResult Create(RoomVM roomVM)

@@ -1,6 +1,7 @@
 ﻿
 using API.Contracts;
 using API.Models;
+using API.Repositories;
 using API.ViewModels.Bookings;
 using Microsoft.AspNetCore.Mvc;
 
@@ -91,6 +92,43 @@ public class BookingController : ControllerBase
         }
 
         return Ok(bookingLengths);
+    }
+
+    [HttpGet("BookingDetail")]
+    public IActionResult GetAllBookingDetail()
+    {
+        try
+        {
+
+            var results = _bookingRepository.GetAllBookingDetail();
+
+            return Ok(results);
+        }
+        catch
+        {
+            return Ok("Ada Error");
+        }
+
+    }
+    [HttpGet("BookingDetail/{guid}")]
+    public IActionResult GetDetailByGuid(Guid guid)
+    {
+        try
+        {
+            var bookingDetailVM = _bookingRepository.GetBookingDetailByGuid(guid);
+
+            if (bookingDetailVM is null)
+            {
+                return Ok("Tidak ditemukan objek dengan Guid ini");
+            }
+
+
+            return Ok(bookingDetailVM);
+        }
+        catch
+        {
+            return Ok("Ada Error");
+        }
     }
 }
 
