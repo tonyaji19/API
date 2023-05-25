@@ -16,9 +16,32 @@ public class EmployeeController : ControllerBase
         _employeeRepository = employeeRepository;
         _mapper = mapper;
     }
+    [HttpGet("GetAllMasterEmployee")]
+    public IActionResult GetAll()
+    {
+        var masterEmployees = _employeeRepository.GetAllMasterEmployee();
+        if (!masterEmployees.Any())
+        {
+            return NotFound();
+        }
+
+        return Ok(masterEmployees);
+    }
+
+    [HttpGet("GetMasterEmployeeByGuid")]
+    public IActionResult GetMasterEmployeeByGuid(Guid guid)
+    {
+        var masterEmployees = _employeeRepository.GetMasterEmployeeByGuid(guid);
+        if (masterEmployees is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(masterEmployees);
+    }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetEmployee()
     {
         var employees = _employeeRepository.GetAll();
         if (!employees.Any())

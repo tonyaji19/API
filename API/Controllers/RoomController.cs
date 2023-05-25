@@ -42,6 +42,29 @@ public class RoomController : ControllerBase
         var data = _mapper.Map(room);
         return Ok(data);
     }
+    [HttpGet("CurrentlyUsedRooms")]
+    public IActionResult GetCurrentlyUsedRooms()
+    {
+        var room = _roomRepository.GetCurrentlyUsedRooms();
+        if (room is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(room);
+    }
+
+    [HttpGet("CurrentlyUsedRoomsByDate")]
+    public IActionResult GetCurrentlyUsedRooms(DateTime dateTime)
+    {
+        var room = _roomRepository.GetByDate(dateTime);
+        if (room is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(room);
+    }
 
     [HttpPost]
     public IActionResult Create(RoomVM roomVM)
