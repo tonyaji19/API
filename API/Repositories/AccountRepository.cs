@@ -4,10 +4,10 @@ using API.Contracts;
 using API.Models;
 using API.Utility;
 using API.ViewModels.Account;
+using API.ViewModels.Accounts;
 using API.ViewModels.Employees;
 using API.ViewModels.Login;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace API.Repositories;
 
@@ -15,10 +15,14 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
 {
     /*    private Dictionary<string, ChangePasswordVM> OTPDictionary;
     */
+    private readonly IUniversityRepository _universityRepository;
     private readonly IEmployeeRepository _employeeRepository;
-    public AccountRepository(BookingManagementDbContext context, IEmployeeRepository employeeRepository) : base(context)
+    private readonly IEducationRepository _educationRepository;
+    public AccountRepository(BookingManagementDbContext context, IEmployeeRepository employeeRepository, IUniversityRepository universityRepository, IEducationRepository educationRepository) : base(context)
     {
+        _universityRepository = universityRepository;
         _employeeRepository = employeeRepository;
+        _educationRepository = educationRepository;
     }
     /*public Account GetByEmail(string email)
     {
@@ -110,7 +114,84 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         }
     }
 
-    
+    public int Register(RegisterVM registerVM)
+    {
+        try
+        {
+            var university = new University
+            {
+                Code = registerVM.Code,
+                Name = registerVM.Name
+
+            };
+            _universityRepository.CreateWithValidate(university);
+
+            var employee = new Employee
+            {
+                Nik = GenerateNIK(),
+                FirstName = registerVM.FirstName,
+                LastName = registerVM.LastName,
+                BirthDate = registerVM.BirthDate,
+                Gender = registerVM.Gender,
+                HiringDate = registerVM.HiringDate,
+                Email = registerVM.Email,
+                PhoneNumber = registerVM.PhoneNumber,
+            };
+            var result = _employeeRepository.CreateWithValidate(employee);
+
+            if (result != 3)
+            {
+                return result;
+            }
+
+            var education = new Education
+            {
+                Guid = employee.Guid,
+                Major = registerVM.Major,
+                Degree = registerVM.Degree,
+                Gpa = registerVM.GPA,
+                UniversityGuid = university.Guid
+            };
+            _educationRepository.Create(education);
+
+            var account = new Account
+            {
+                Guid = employee.Guid,
+                Password = registerVM.Password,
+                IsDeleted = false,
+                IsUsed = true,
+                OTP = 0
+            };
+
+            Create(account);
+
+            return 3;
+
+        }
+        catch
+        {
+            return 0;
+        }
+
+    }
+
+    private string GenerateNIK()
+    {
+        var lastNik = _employeeRepository.GetAll().OrderByDescending(e => int.Parse(e.Nik)).FirstOrDefault();
+
+        if (lastNik != null)
+        {
+            int lastNikNumber;
+            if (int.TryParse(lastNik.Nik, out lastNikNumber))
+            {
+                return (lastNikNumber + 1).ToString();
+            }
+        }
+
+        return "100000";
+    }
+
+
     /*        OTPDictionary = new Dictionary<string, ChangePasswordVM>();
     */
     /* public AccountEmpVM Login(LoginVM loginVM)

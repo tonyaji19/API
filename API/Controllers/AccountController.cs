@@ -51,6 +51,7 @@ public class AccountController : ControllerBase
 
         return Ok(data);
     }*/
+
     [HttpPost("login")]
 
     public IActionResult Login(LoginVM loginVM)
@@ -65,6 +66,27 @@ public class AccountController : ControllerBase
         if (account.Password != loginVM.Password)
         {
             return BadRequest("Password is invalid");
+        }
+
+        return Ok();
+
+    }
+    [HttpPost("Register")]
+
+    public IActionResult Register(RegisterVM registerVM)
+    {
+
+        var result = _accountRepository.Register(registerVM);
+        switch (result)
+        {
+            case 0:
+                return BadRequest("Registration failed");
+            case 1:
+                return BadRequest("Email already exists");
+            case 2:
+                return BadRequest("Phone number already exists");
+            case 3:
+                return Ok("Registration success");
         }
 
         return Ok();

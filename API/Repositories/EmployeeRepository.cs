@@ -9,6 +9,31 @@ public class EmployeeRepository : GeneralRepository<Employee>, IEmployeeReposito
 {
     public EmployeeRepository(BookingManagementDbContext context) : base(context) { }
 
+    public int CreateWithValidate(Employee employee)
+    {
+        try
+        {
+            bool ExistsByEmail = _context.Employees.Any(e => e.Email == employee.Email);
+            if (ExistsByEmail)
+            {
+                return 1;
+            }
+
+            bool ExistsByPhoneNumber = _context.Employees.Any(e => e.PhoneNumber == employee.PhoneNumber);
+            if (ExistsByPhoneNumber)
+            {
+                return 2;
+            }
+
+            Create(employee);
+            return 3;
+
+        }
+        catch
+        {
+            return 0;
+        }
+    }
     public IEnumerable<MasterEmployeeVM> GetAllMasterEmployee()
     {
         var employees = GetAll();
