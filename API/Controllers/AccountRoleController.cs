@@ -4,7 +4,9 @@ using API.Contracts;
 using API.Models;
 using API.Repositories;
 using API.ViewModels.AccountRoles;
+using API.ViewModels.Others;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers;
 
@@ -26,11 +28,22 @@ public class AccountRoleController : ControllerBase
         var accountRoles = _accountRoleRepository.GetAll();
         if (!accountRoles.Any())
         {
-            return NotFound();
+            return NotFound(new ResponseVM<AccountRoleVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Not Found"
+            });
         }
 
         var data = accountRoles.Select(_mapper.Map).ToList();
-        return Ok(data);
+        return Ok(new ResponseVM<List<AccountRoleVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Data AccountRole",
+            Data = data
+        });
     }
 
     [HttpGet("{guid}")]
@@ -39,11 +52,22 @@ public class AccountRoleController : ControllerBase
         var accountRole = _accountRoleRepository.GetByGuid(guid);
         if (accountRole is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<AccountRoleVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Not Found Guid"
+            });
         }
 
         var data = _mapper.Map(accountRole);
-        return Ok(accountRole);
+        return Ok(new ResponseVM<AccountRoleVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Guid",
+            Data = data
+        });
     }
 
     [HttpPost]
@@ -53,10 +77,20 @@ public class AccountRoleController : ControllerBase
         var result = _accountRoleRepository.Create(accountRoleConverted);
         if (result is null)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountRoleVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Create Account Failed"
+            });
         }
 
-        return Ok(result);
+        return Ok(new ResponseVM<AccountRoleVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Create Account Success"
+        });
     }
 
     [HttpPut]
@@ -66,10 +100,20 @@ public class AccountRoleController : ControllerBase
         var isUpdated = _accountRoleRepository.Update(accountRoleConverted); 
         if (!isUpdated)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountRoleVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Update Account Failed"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<AccountRoleVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Update Account Success"
+        });
     }
 
     [HttpDelete("{guid}")]
@@ -78,10 +122,20 @@ public class AccountRoleController : ControllerBase
         var isDeleted = _accountRoleRepository.Delete(guid);
         if (!isDeleted)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountRoleVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Delete Account Failed"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<AccountRoleVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Delete Account Success"
+        });
     }
 }
 

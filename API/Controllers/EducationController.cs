@@ -3,7 +3,9 @@
 using API.Contracts;
 using API.Models;
 using API.ViewModels.Educations;
+using API.ViewModels.Others;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers;
 
@@ -26,11 +28,22 @@ public class EducationController : ControllerBase
         var education = _educationRepository.GetAll();
         if (!education.Any())
         {
-            return NotFound();
+            return NotFound(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Not Found"
+            });
         }
 
         var resultConverted = education.Select(_mapper.Map).ToList();
-        return Ok(resultConverted);
+        return Ok(new ResponseVM<List<EducationVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Data Education",
+            Data = resultConverted
+        });
     }
 
     [HttpGet("{guid}")]
@@ -39,11 +52,22 @@ public class EducationController : ControllerBase
         var education = _educationRepository.GetByGuid(guid);
         if (education is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Not Found"
+            });
         }
 
         var data = _mapper.Map(education);
-        return Ok(data);
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Data Education",
+            Data = data
+        });
     }
 
     [HttpPost]
@@ -53,10 +77,21 @@ public class EducationController : ControllerBase
         var result = _educationRepository.Create(educationConverted);
         if (result is null)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status400BadRequest
+                    ,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed Create Education"
+            });
         }
 
-        return Ok(result);
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Create Education"
+        });
     }
 
     [HttpPut]
@@ -66,10 +101,20 @@ public class EducationController : ControllerBase
         var isUpdated = _educationRepository.Update(educationConverted);
         if (!isUpdated)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status400BadRequest
+                    ,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed Update Education"
+            });
         }
-
-        return Ok();
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Update Education"
+        });
     }
 
     [HttpDelete("{guid}")]
@@ -78,10 +123,20 @@ public class EducationController : ControllerBase
         var isDeleted = _educationRepository.Delete(guid);
         if (!isDeleted)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status400BadRequest
+                    ,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed Delete Education"
+            });
         }
-
-        return Ok();
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Delete Education"
+        });
     }
 }
 
