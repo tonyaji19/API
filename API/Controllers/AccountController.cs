@@ -9,6 +9,8 @@ using API.ViewModels.Login;
 using API.ViewModels.Others;
 using API.ViewModels.Universities;
 using Azure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Net;
@@ -40,9 +42,9 @@ public class AccountController : BaseController<Account, AccountVM>
         _emailService = emailService;
         _tokenService = tokenService;
     }
-
+    [AllowAnonymous]
     [HttpPost("Register")]
-
+    /*[EnableCors("Tokopedia")]*/
     public IActionResult Register(RegisterVM registerVM)
     {
 
@@ -92,7 +94,7 @@ public class AccountController : BaseController<Account, AccountVM>
 
     }
 
-
+    [AllowAnonymous]
     [HttpPost("Login")]
 
     public IActionResult Login(LoginVM loginVM)
@@ -147,7 +149,7 @@ public class AccountController : BaseController<Account, AccountVM>
         
     }
 
-
+    [AllowAnonymous]
     [HttpPost("ChangePassword")]
     public IActionResult ChangePassword(ChangePasswordVM changePasswordVM)
     {
@@ -209,6 +211,7 @@ public class AccountController : BaseController<Account, AccountVM>
         }
 
     }
+    [AllowAnonymous]
     [HttpPost("ForgotPassword/{email}")]
     public IActionResult UpdateResetPass(String email)
     {
@@ -250,6 +253,7 @@ public class AccountController : BaseController<Account, AccountVM>
                 });
         }
     }
+
     [HttpGet("GetAllByToken")]
         public IActionResult GetByToken(string token)
         {

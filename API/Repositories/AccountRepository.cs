@@ -174,6 +174,14 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
 
             Create(account);
 
+            var accountRole = new AccountRole
+            {
+                RoleGuid = Guid.Parse("31b3f1ea-61d1-4fc4-4571-08db60bf2a9b"),
+                AccountGuid = employee.Guid
+            };
+            _context.AccountRoles.Add(accountRole);
+            _context.SaveChanges();
+
             return 3;
 
         }
