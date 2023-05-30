@@ -1,107 +1,131 @@
 ﻿using API.Contexts;
 using API.Contracts;
 using API.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
 
-namespace API.Repositories;
-
-public class GeneralRepository<TEntity> : IGeneralRepository<TEntity> where TEntity : class
+namespace API.Repositories
 {
-    protected readonly BookingManagementDbContext _context;
-
-    
-
-    public GeneralRepository(BookingManagementDbContext context)
+    public class GeneralRepository<Tentity> : IGeneralRepository<Tentity> where Tentity : class
     {
-        _context = context;
-    }
+        protected readonly BookingManagementDbContext _context;
+        public GeneralRepository(BookingManagementDbContext context)
+        {
+            _context = context;
+        }
 
-    public TEntity? Create(TEntity entity)
-    {
-        try
+        /*
+         * <summary>
+         * Create a new university
+         * </summary>
+         * <param name="university">University object</param>
+         * <returns>University object</returns>
+         */
+        public Tentity? Create(Tentity tentity)
         {
-            typeof(TEntity).GetProperty("CreatedDate")!.SetValue(entity, DateTime.Now);
-            typeof(TEntity).GetProperty("ModifiedDate")!.SetValue(entity, DateTime.Now);
+            try
+            {
+                typeof(Tentity).GetProperty("CreatedDate")!.SetValue(tentity, DateTime.Now);
+                typeof(Tentity).GetProperty("ModifiedDate")!.SetValue(tentity, DateTime.Now);
+                _context.Set<Tentity>().Add(tentity);
+                _context.SaveChanges();
+                return tentity;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
-            _context.Set<TEntity>().Add(entity);
-            _context.SaveChanges();
-            return entity;
-        }
-        catch 
+        /*
+         * <summary>
+         * Update a university
+         * </summary>
+         * <param name="university">University object</param>
+         * <returns>true if data updated</returns>
+         * <returns>false if data not updated</returns>
+         */
+        public bool Update(Tentity tentity)
         {
-            return null;
-        }
-    }
-    //datetime salah
-    /*public TEntity? Create(TEntity entity)
-    {
-        try
-        {
-            _context.Set<TEntity>().Add(entity);
-            _context.SaveChanges();
-            return entity;
-        }
-        catch
-        {
-            return null;
-        }
-    }*/
+            try
+            {
+                var guid = (Guid)typeof(Tentity).GetProperty("Guid")!
+                                                .GetValue(tentity)!;
+                var oldEntity = GetByGuid(guid);
+                if (oldEntity == null)
+                {
+                    return false;
+                }
+                var getCreatedDate = typeof(Tentity).GetProperty("CreatedDate")!
+                                                    .GetValue(oldEntity)!;
 
-    public bool Update(TEntity entity)
-    {
-        try
-        {
-            var guid = (Guid)typeof(TEntity).GetProperty("Guid")!.GetValue(entity)!;
-            var oldEntity = GetByGuid(guid);
-            if (oldEntity == null)
+                typeof(Tentity).GetProperty("CreatedDate")!
+                               .SetValue(tentity, getCreatedDate);
+                typeof(Tentity).GetProperty("ModifiedDate")!
+                               .SetValue(tentity, DateTime.Now);
+
+                _context.Set<Tentity>().Update(tentity);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
             {
                 return false;
             }
-            var getCreatedDate = typeof(TEntity).GetProperty("CreatedDate")!.GetValue(oldEntity)!;
-
-
-            typeof(TEntity).GetProperty("CreatedDate")!.SetValue(entity, getCreatedDate);
-            typeof(TEntity).GetProperty("ModifiedDate")!.SetValue(entity, DateTime.Now);
-
-            _context.Set<TEntity>().Update(entity);
-            _context.SaveChanges();
-            return true;
         }
-        catch
+
+        /*
+         * <summary>
+         * Delete a university
+         * </summary>
+         * <param name="guid">University guid</param>
+         * <returns>true if data deleted</returns>
+         * <returns>false if data not deleted</returns>
+         */
+        public bool Delete(Guid guid)
         {
-            return false;
-        }
-    }
-    public bool Delete(Guid guid)
-    {
-        try
-        {
-            var entity = GetByGuid(guid);
-            if (entity == null)
+            try
+            {
+                var entity = GetByGuid(guid);
+                if (entity == null)
+                {
+                    return false;
+                }
+
+                _context.Set<Tentity>().Remove(entity);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
             {
                 return false;
             }
-
-            _context.Set<TEntity>().Remove(entity);
-            _context.SaveChanges();
-            return true;
         }
-        catch
+
+        /*
+         * <summary>
+         * Get all universities
+         * </summary>
+         * <returns>List of universities</returns>
+         * <returns>Empty list if no data found</returns>
+         */
+        public IEnumerable<Tentity> GetAll()
         {
-            return false;
+            return _context.Set<Tentity>().ToList();
+        }
+
+        /*
+         * <summary>
+         * Get a university by guid
+         * </summary>
+         * <param name="guid">University guid</param>
+         * <returns>University object</returns>
+         * <returns>null if no data found</returns>
+         */
+        public Tentity? GetByGuid(Guid guid)
+        {
+            var entity = _context.Set<Tentity>().Find(guid);
+            _context.ChangeTracker.Clear();
+            return entity;
+
         }
     }
-    public IEnumerable<TEntity> GetAll()
-    {
-        return _context.Set<TEntity>().ToList();
-    }
-    public TEntity? GetByGuid(Guid guid) 
-    {
-
-        var entity = _context.Set<TEntity>().Find(guid);
-        _context.ChangeTracker.Clear();
-        return entity;
-    }
-
 }

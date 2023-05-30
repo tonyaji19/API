@@ -9,31 +9,31 @@ public class EmployeeRepository : GeneralRepository<Employee>, IEmployeeReposito
 {
     public EmployeeRepository(BookingManagementDbContext context) : base(context) { }
 
-    public int CreateWithValidate(Employee employee)
-    {
-        try
+    /*    public int CreateWithValidate(Employee employee)
         {
-            bool ExistsByEmail = _context.Employees.Any(e => e.Email == employee.Email);
-            if (ExistsByEmail)
+            try
             {
-                return 1;
-            }
+                bool ExistsByEmail = _context.Employees.Any(e => e.Email == employee.Email);
+                if (ExistsByEmail)
+                {
+                    return 1;
+                }
 
-            bool ExistsByPhoneNumber = _context.Employees.Any(e => e.PhoneNumber == employee.PhoneNumber);
-            if (ExistsByPhoneNumber)
+                bool ExistsByPhoneNumber = _context.Employees.Any(e => e.PhoneNumber == employee.PhoneNumber);
+                if (ExistsByPhoneNumber)
+                {
+                    return 2;
+                }
+
+                Create(employee);
+                return 3;
+
+            }
+            catch
             {
-                return 2;
+                return 0;
             }
-
-            Create(employee);
-            return 3;
-
-        }
-        catch
-        {
-            return 0;
-        }
-    }
+        }*/
     public IEnumerable<MasterEmployeeVM> GetAllMasterEmployee()
     {
         var employees = GetAll();
@@ -111,6 +111,18 @@ public class EmployeeRepository : GeneralRepository<Employee>, IEmployeeReposito
         {
             return null;
         }
+    }
+
+    public bool CheckEmailAndPhoneAndNIK(string? value)
+    {
+        return _context.Employees.Any(e => e.Email == value || e.PhoneNumber == value || e.Nik == value);
+    }
+
+    public Employee GetbyEmail(string email)
+    {
+        var employee = _context.Set<Employee>().FirstOrDefault(e => e.Email == email);
+        return employee;
+
     }
 
     /*private readonly BookingManagementDbContext _context;

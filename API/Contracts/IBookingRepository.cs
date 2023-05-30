@@ -6,6 +6,8 @@ namespace API.Contracts;
 
 public interface IBookingRepository : IGeneralRepository<Booking>
 {
+    IEnumerable<Booking> GetByRoomId(Guid roomId);
+    IEnumerable<Booking> GetByEmployeeId(Guid employeeId);
     IEnumerable<BookingDurationVM> GetBookingDuration();
     BookingDetailVM GetBookingDetailByGuid(Guid guid);
     IEnumerable<BookingDetailVM> GetAllBookingDetail();

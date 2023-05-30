@@ -1,65 +1,75 @@
-﻿using System.Net.Mail;
-using System.Net;
+﻿using API.Contracts;
+using System.Net.Mail;
 
-namespace API.Utility
+namespace API.Utility;
+
+public class FluentEmail
 {
-    public class Message
+    public string Email { get; set; }
+    public string Subject { get; set; }
+    public string HtmlMessage { get; set; }
+}
+
+public class EmailService : IEmailService
+{
+    private readonly string smtpServer;
+    private readonly int smtpPort;
+    private readonly string fromEmailAddress;
+
+    private FluentEmail fluentEmail = new();
+
+    public EmailService(string smtpServer, int smtpPort, string fromEmailAddress)
     {
-        public string Subject { get; set; }
-        public string Body { get; set; }
-        public string Email { get; set; }
+        this.smtpServer = smtpServer;
+        this.smtpPort = smtpPort;
+        this.fromEmailAddress = fromEmailAddress;
     }
 
-    public class MailService
+    public EmailService SetEmail(string email)
     {
-        private Message message;
-        private SmtpClient smtpClient;
+        fluentEmail.Email = email;
+        return this;
+    }
 
-        public MailService()
+    public EmailService SetSubject(string subject)
+    {
+        fluentEmail.Subject = subject;
+        return this;
+    }
+
+    public EmailService SetHtmlMessage(string htmlMessage)
+    {
+        fluentEmail.HtmlMessage = htmlMessage;
+        return this;
+    }
+
+    /*
+     * <summary>
+     * Send email
+     * </summary>
+     * <param name="email">Email address</param>
+     * <param name="subject">Email subject</param>
+     * <param name="htmlMessage">Email message</param>
+     * <returns>Task</returns>
+     * <remarks>
+     * This method will send email to email address
+     * </remarks>
+     */
+    public void SendEmailAsync()
+    {
+        var message = new MailMessage
         {
-            message = new Message();
-            smtpClient = new SmtpClient("localhost", 25)
-            {
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                EnableSsl = false,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("", "") // No authentication required for Papercut
-            };
-        }
+            From = new MailAddress(fromEmailAddress),
+            Subject = fluentEmail.Subject,
+            Body = fluentEmail.HtmlMessage,
+            To = { fluentEmail.Email },
+            IsBodyHtml = true
+        };
 
-        public MailService WithSubject(string subject)
-        {
-            message.Subject = subject;
-            return this;
-        }
+        using var client = new SmtpClient(smtpServer, smtpPort);
+        client.Send(message);
 
-        public MailService WithBody(string body)
-        {
-            message.Body = body;
-            return this;
-        }
-
-        public MailService WithEmail(string email)
-        {
-            message.Email = email;
-            return this;
-        }
-
-        public void Send()
-        {
-            MailMessage mailMessage = new MailMessage
-            {
-                From = new MailAddress("sender@example.com"),
-                Subject = message.Subject,
-                Body = message.Body,
-            };
-            mailMessage.To.Add(message.Email);
-
-            smtpClient.Send(mailMessage);
-
-            // Clean up resources
-            mailMessage.Dispose();
-            smtpClient.Dispose();
-        }
+        message.Dispose();
+        client.Dispose();
     }
 }

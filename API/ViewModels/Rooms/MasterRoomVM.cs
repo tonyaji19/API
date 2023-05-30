@@ -1,4 +1,6 @@
-﻿namespace API.ViewModels.Rooms;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.ViewModels.Rooms;
 
 public class MasterRoomVM
 {
@@ -6,6 +8,8 @@ public class MasterRoomVM
     public string Status { get; set; }
     public string RoomName { get; set; }
     public int Floor { get; set; }
+
+    [Range(0, 100, ErrorMessage = "Max Capacity is 100 Person")]
     public int Capacity { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }

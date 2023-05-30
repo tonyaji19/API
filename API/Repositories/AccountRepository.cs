@@ -7,22 +7,28 @@ using API.ViewModels.Account;
 using API.ViewModels.Accounts;
 using API.ViewModels.Employees;
 using API.ViewModels.Login;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories;
 
 public class AccountRepository : GeneralRepository<Account>, IAccountRepository
 {
     /*    private Dictionary<string, ChangePasswordVM> OTPDictionary;
+     *    
     */
+    protected readonly BookingManagementDbContext _context;
+
     private readonly IUniversityRepository _universityRepository;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IEducationRepository _educationRepository;
-    public AccountRepository(BookingManagementDbContext context, IEmployeeRepository employeeRepository, IUniversityRepository universityRepository, IEducationRepository educationRepository) : base(context)
+    private readonly IRoleRepository _roleRepository;
+    public AccountRepository(BookingManagementDbContext context, IEmployeeRepository employeeRepository, IRoleRepository roleRepository, IUniversityRepository universityRepository, IEducationRepository educationRepository) : base(context)
     {
         _universityRepository = universityRepository;
         _employeeRepository = employeeRepository;
         _educationRepository = educationRepository;
+        _roleRepository = roleRepository;
+        _context = context;
     }
     /*public Account GetByEmail(string email)
     {
@@ -42,7 +48,14 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
                         Password = acc.Password
 
                     };
-        return query.FirstOrDefault();
+        var validate = query.FirstOrDefault();
+
+        if (validate != null && Hashing.ValidatePassword(loginVM.Password, validate.Password))
+        {
+
+            loginVM.Password = validate.Password;
+        }
+        return validate;
     }
     public int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM)
     {
@@ -120,8 +133,8 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         {
             var university = new University
             {
-                Code = registerVM.Code,
-                Name = registerVM.Name
+                Code = registerVM.UniversityCode,
+                Name = registerVM.UniversityName
 
             };
             _universityRepository.CreateWithValidate(university);
@@ -137,12 +150,8 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
                 Email = registerVM.Email,
                 PhoneNumber = registerVM.PhoneNumber,
             };
-            var result = _employeeRepository.CreateWithValidate(employee);
+            var result = _employeeRepository.Create(employee);
 
-            if (result != 3)
-            {
-                return result;
-            }
 
             var education = new Education
             {
@@ -157,7 +166,7 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
             var account = new Account
             {
                 Guid = employee.Guid,
-                Password = registerVM.Password,
+                Password = Hashing.HashPassword(registerVM.Password),
                 IsDeleted = false,
                 IsUsed = true,
                 OTP = 0
@@ -191,6 +200,24 @@ public class AccountRepository : GeneralRepository<Account>, IAccountRepository
         return "100000";
     }
 
+    public IEnumerable<string> GetRoles(Guid guid)
+    {
+        var getAccount = GetByGuid(guid);
+        if (getAccount == null) return Enumerable.Empty<string>();
+        var getAccountRoles = from accountRoles in _context.AccountRoles
+                              join roles in _context.Roles on accountRoles.RoleGuid equals roles.Guid
+                              where accountRoles.AccountGuid == guid
+                              select roles.Name;
+
+        return getAccountRoles.ToList();
+        /*var roles = _context.AccountRoles
+            .Include(ar => ar.Role)
+            .Where(ar => ar.AccountGuid == guid)
+            .Select(ar => ar.Role.Name)
+            .ToList();
+
+        return roles.ToList();*/
+    }
 
     /*        OTPDictionary = new Dictionary<string, ChangePasswordVM>();
     */

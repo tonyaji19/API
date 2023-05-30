@@ -12,7 +12,15 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountRoleController : ControllerBase
+
+public class AccountRoleController : BaseController<AccountRole, AccountRoleVM>
+{
+    public AccountRoleController(IAccountRoleRepository accountRoleRepository, IMapper<AccountRole, AccountRoleVM> mapper)
+        : base(accountRoleRepository, mapper)
+    {
+    }
+}
+/*public class AccountRoleController : ControllerBase
 {
     private readonly IMapper<AccountRole, AccountRoleVM> _mapper;
     private readonly IAccountRoleRepository _accountRoleRepository;
@@ -20,9 +28,9 @@ public class AccountRoleController : ControllerBase
     {
         _mapper = mapper;
         _accountRoleRepository = accountRoleRepository;
-    }
+    }*/
 
-    [HttpGet]
+/*[HttpGet]
     public IActionResult GetAll()
     {
         var accountRoles = _accountRoleRepository.GetAll();
@@ -137,6 +145,6 @@ public class AccountRoleController : ControllerBase
             Message = "Delete Account Success"
         });
     }
-}
+}*/
 
 

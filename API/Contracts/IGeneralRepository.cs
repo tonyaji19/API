@@ -1,10 +1,16 @@
-﻿namespace API.Contracts;
+﻿using API.Models;
+using API.ViewModels.Accounts;
 
-public interface IGeneralRepository<TEntity>
+namespace API.Contracts
 {
-    TEntity Create(TEntity entity);
-    bool Update(TEntity entity);
-    bool Delete(Guid guid);
-    IEnumerable<TEntity> GetAll();
-    TEntity GetByGuid(Guid guid);
+    public interface IGeneralRepository<Tentity>
+    {
+        Tentity? Create(Tentity tentity);
+        bool Update(Tentity tentity);
+        bool Delete(Guid guid);
+
+        IEnumerable<Tentity> GetAll();
+
+        Tentity? GetByGuid(Guid guid);
+    }
 }
