@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+ul {
+    list-style-type: none;
+}
+
+[class*="col"] {
+    padding: 3rem;
+    /*/ background-color: #33b5e5;*/
+    /*border: 2px solid #fff;*/
+    color: #ffff;
+    text-align: center;
+}
+
+@keyframes example {
+    0% {
+        color: red;
+        left: 0px;
+        top: 0px;
+    }
+
+    25% {
+        color: yellow;
+        left: 200px;
+        top: 0px;
+    }
+
+    50% {
+        color: blue;
+        left: 200px;
+        top: 100px;
+    }
+
+    75% {
+        color: green;
+        left: -100px;
+        top: 100px;
+    }
+
+    100% {
+        color: red;
+        left: -100px;
+        top: 0px;
+    }
+}
+
+/*STYLE table JQUERY*/
+.table {
+    margin-bottom: 4rem;
+    color: #212529;
+    width: 100%;
+}
+
+    /* Change color of header columns */
+    .table thead th {
+        color: white;
+        background-color: black;
+        text-align:center;
+    }
+
+
+.carousel-item {
+    
+    
+    height: 150%;
+    text-align: center;
+}
+
+    .carousel-item img {
+        width: 150px;
+        margin-bottom: 10px;
+    }
+
+.carousel-caption {
+    width: 100%;
+}
+
+    .carousel-caption h5 {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .carousel-caption p {
+        font-size: 14px;
+        margin: 0;
+    }
+
